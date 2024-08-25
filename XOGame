@@ -1,0 +1,98 @@
+import java.awt.BasicStroke;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+public class XOGame extends Canvas implements MouseListener
+{
+private String message="";
+//startX=X-coordination of board up-left corner
+//startY=Y-coordination of board up-left corner
+//squareSize=size of each square
+private int startX=200,startY=50,squareSize=200,n=3;
+private int [][]board=new int[n][n];
+private int playerTurn=1; //playerTurn=1---> Player X, playerTurn=2---->Player O
+private boolean gameOver;
+private int numberOfPieces=0;
+public XOGame()
+{
+ addMouseListener(this);
+}
+public void paint( Graphics g )
+{
+//draw n*n square board
+Graphics2D g2 = (Graphics2D) g;
+g2.setStroke(new BasicStroke(3));
+for(int i=0;i<=2*n;i++) {
+  g.drawLine(startX, startY+i*squareSize, startX+n*squareSize, startY+i*squareSize);
+  g.drawLine(startX+i*squareSize, startY, startX+i*squareSize, startY+n*squareSize);
+  }
+//Display X and O on the Screen
+g.setFont(new Font ("Arial",Font.ITALIC, 72));
+for(int i=0;i<n;i++)
+  for(int j=0;j<n;j++)
+    if(board[i][j]==1) {
+        g.setColor(Color.red);
+        g.drawString("X",startX+j*squareSize+squareSize/3 ,startY+i*squareSize+squareSize/2);
+      }
+    else if(board[i][j]==2) {
+        g.setColor(Color.blue);
+        g.drawString("O",startX+j*squareSize+squareSize/3 ,startY+i*squareSize+squareSize/2);
+      }
+g.setFont(new Font ("Arial",Font.BOLD, 36));
+g.setColor(Color.PINK);
+g.drawString(message,200,40);
+}
+public void mouseClicked( MouseEvent evt )
+{
+  if(!gameOver) {
+      if( evt.getX() >startX && 
+    	  evt.getX()<startX+n*squareSize &&
+    	  evt.getY()>startY &&
+    	  evt.getY()<startY+n*squareSize) {
+              int row=(evt.getY()-startY)/squareSize;
+              int col=(evt.getX()-startX)/squareSize;
+              if(board[row][col]==0) {
+                    numberOfPieces++;
+                    board[row][col]=playerTurn;
+                    if( (board[0][0]==playerTurn && board[0][1]==playerTurn && board[0][2]==playerTurn)||
+                        (board[1][0]==playerTurn && board[1][1]==playerTurn && board[1][2]==playerTurn)||
+                        (board[2][0]==playerTurn && board[2][1]==playerTurn && board[2][2]==playerTurn)||
+                        (board[0][0]==playerTurn && board[1][0]==playerTurn && board[2][0]==playerTurn)||
+                        (board[0][1]==playerTurn && board[1][1]==playerTurn && board[2][1]==playerTurn)||
+                        (board[0][2]==playerTurn && board[1][2]==playerTurn && board[2][2]==playerTurn)||
+                        (board[0][0]==playerTurn && board[1][1]==playerTurn && board[2][2]==playerTurn)||
+                        (board[2][0]==playerTurn && board[1][1]==playerTurn && board[0][2]==playerTurn)){
+                              if(playerTurn==1)
+                                        message="X wins!";
+                              else
+                                        message="O wins!";
+                              gameOver=true;
+                              }
+                    else if(numberOfPieces==9) {
+                              message="Tie";
+                              gameOver=true;
+                              }
+                         else {
+                            if(playerTurn==1) {
+                              message="Next Trun=O";
+                              playerTurn=2;
+                          }
+                          else{
+                              message="Next Trun=X";
+                              playerTurn=1;
+                              }
+                         }
+                }
+            }
+  repaint();
+  }//end if(!gameOver)
+}
+@Override public void mouseEntered(MouseEvent arg0) {}
+@Override public void mouseExited(MouseEvent arg0) {}
+@Override public void mousePressed(MouseEvent arg0) {}
+@Override public void mouseReleased(MouseEvent arg0) {}
+}
